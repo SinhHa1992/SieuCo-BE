@@ -2,6 +2,9 @@
   "name": "design-export-backend",
   "version": "1.0.0",
   "description": "Node.js backend for Design Export Tool - MongoDB",
+  "engines": {
+    "node": ">=20"
+  },
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
