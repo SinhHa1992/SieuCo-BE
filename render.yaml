@@ -5,12 +5,11 @@ services:
     name: sieuco-api
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
+    # NODE_ENV=production makes plain `npm install` skip devDependencies (@types, typescript).
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: MONGODB_URI
         sync: false
       - key: OPENAI_API_KEY
