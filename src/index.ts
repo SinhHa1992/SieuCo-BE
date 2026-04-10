@@ -31,7 +31,8 @@ const PORT = process.env.PORT ?? 3002;
 const HOST = process.env.HOST ?? '0.0.0.0';
 
 app.use(cors());
-app.use(express.json());
+// Google Contacts import can send large batches (see MAX_IMPORT_BATCH); default 100kb is too small.
+app.use(express.json({ limit: '12mb' }));
 
 app.use('/api/auth', authRouter);
 app.use('/api/export', exportRouter);
