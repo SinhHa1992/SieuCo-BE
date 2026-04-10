@@ -4,6 +4,7 @@ const MAX_NAME = 500;
 const MAX_PHONE = 80;
 const MAX_EMAIL = 320;
 const MAX_JOB = 300;
+const MAX_GENDER = 32;
 const MAX_LIST_LEN = 50;
 
 export type SanitizedContactRow = {
@@ -13,6 +14,7 @@ export type SanitizedContactRow = {
   company: string;
   phones: string[];
   emails: string[];
+  gender: string;
 };
 
 function trimStr(v: unknown, max: number): string {
@@ -31,6 +33,12 @@ function trimList(v: unknown, maxLen: number, itemMax: number): string[] {
   return out;
 }
 
+function normalizeGender(raw: unknown): string {
+  const s = trimStr(raw, MAX_GENDER).toLowerCase();
+  if (s === 'male' || s === 'female') return s;
+  return '';
+}
+
 export function sanitizeContactRow(raw: unknown): SanitizedContactRow | null {
   if (raw === null || typeof raw !== 'object') return null;
   const o = raw as Record<string, unknown>;
@@ -42,7 +50,8 @@ export function sanitizeContactRow(raw: unknown): SanitizedContactRow | null {
   const emails = trimList(o.emails, MAX_LIST_LEN, MAX_EMAIL);
   const jobTitle = trimStr(o.jobTitle, MAX_JOB);
   const company = trimStr(o.company, MAX_JOB);
-  return { deviceContactId, displayName, jobTitle, company, phones, emails };
+  const gender = normalizeGender(o.gender);
+  return { deviceContactId, displayName, jobTitle, company, phones, emails, gender };
 }
 
 export const MAX_IMPORT_BATCH = 2000;

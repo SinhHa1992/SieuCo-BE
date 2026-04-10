@@ -10,12 +10,14 @@ import {
   sanitizeContactDeviceIds,
 } from '../lib/dealsValidation.js';
 import { getDealDeadline, differenceInDays } from '../lib/dealDeadline.js';
+import {
+  linkedContactsForResponse,
+  collectLinkedDeviceIdsFromDealDoc,
+} from '../lib/dealLinkedContactIds.js';
 
 export const dealsRouter = Router();
 
 const MAX_LEN = 50000;
-
-type ClientLinkedContact = { device_contact_id: string; display_name: string };
 
 type ContactHydrated = {
   displayName: string;
@@ -33,42 +35,6 @@ type ClientLinkedContactDetail = {
   phones: string[];
   emails: string[];
 };
-
-function linkedContactsForResponse(doc: Record<string, unknown>): ClientLinkedContact[] {
-  const raw = doc.linkedContacts;
-  if (Array.isArray(raw) && raw.length > 0) {
-    const out: ClientLinkedContact[] = [];
-    for (const item of raw) {
-      if (item === null || typeof item !== 'object') continue;
-      const o = item as Record<string, unknown>;
-      const id = String(o.deviceContactId ?? '').trim();
-      if (!id) continue;
-      out.push({
-        device_contact_id: id,
-        display_name: String(o.displayName ?? ''),
-      });
-    }
-    return out;
-  }
-  const legacyId = String(doc.contactDeviceId ?? '').trim();
-  if (legacyId) {
-    return [
-      {
-        device_contact_id: legacyId,
-        display_name: String(doc.contactName ?? ''),
-      },
-    ];
-  }
-  return [];
-}
-
-function collectLinkedDeviceIdsFromDealDoc(doc: Record<string, unknown>): string[] {
-  const ids = new Set<string>();
-  for (const row of linkedContactsForResponse(doc)) {
-    if (row.device_contact_id) ids.add(row.device_contact_id);
-  }
-  return [...ids];
-}
 
 async function loadContactMap(userEmail: string, ids: string[]): Promise<Map<string, ContactHydrated>> {
   if (ids.length === 0) return new Map();

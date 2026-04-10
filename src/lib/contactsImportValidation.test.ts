@@ -23,6 +23,7 @@ test('sanitizeContactRow trims lists', () => {
   assert.equal(r!.displayName, 'Bob');
   assert.equal(r!.jobTitle, '');
   assert.equal(r!.company, '');
+  assert.equal(r!.gender, '');
   assert.deepEqual(r!.phones, ['+1']);
   assert.deepEqual(r!.emails, ['a@b.co']);
 });
@@ -37,4 +38,28 @@ test('sanitizeContactRow job title and company', () => {
   assert.ok(r);
   assert.equal(r!.jobTitle, 'Engineer');
   assert.equal(r!.company, 'Acme');
+});
+
+test('sanitizeContactRow gender male female only', () => {
+  const m = sanitizeContactRow({
+    deviceContactId: 'g1',
+    displayName: 'X',
+    gender: 'male',
+  });
+  assert.ok(m);
+  assert.equal(m!.gender, 'male');
+  const f = sanitizeContactRow({
+    deviceContactId: 'g2',
+    displayName: 'Y',
+    gender: 'FEMALE',
+  });
+  assert.ok(f);
+  assert.equal(f!.gender, 'female');
+  const z = sanitizeContactRow({
+    deviceContactId: 'g3',
+    displayName: 'Z',
+    gender: 'other',
+  });
+  assert.ok(z);
+  assert.equal(z!.gender, '');
 });

@@ -8,6 +8,8 @@ export interface IContact extends Document {
   company: string;
   phones: string[];
   emails: string[];
+  /** Google People `genders.value`: typically `male` | `female` | empty */
+  gender: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +23,7 @@ const contactSchema = new Schema<IContact>(
     company: { type: String, default: '' },
     phones: { type: [String], default: [] },
     emails: { type: [String], default: [] },
+    gender: { type: String, default: '' },
   },
   { timestamps: true }
 );
